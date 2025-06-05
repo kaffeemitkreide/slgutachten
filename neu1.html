@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Schulleiter-Gutachten Rechner</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f2f2f2;
+      padding: 1rem;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+    input {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.3rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+    }
+    button {
+      margin-top: 1.5rem;
+      width: 100%;
+      padding: 0.8rem;
+      font-size: 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #ergebnis {
+      margin-top: 2rem;
+      font-weight: bold;
+      text-align: center;
+      font-size: 1.8rem;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Schulleiter-Gutachten Rechner</h1>
+    <form id="notenForm">
+      <label>Schul- und Beamtenrecht (SBR): <input type="text" name="sbr"></label>
+      <label>Pädagogik-Kolloquium: <input type="text" name="paedagogik"></label>
+      <label>Lehrprobe 1 (UB1): <input type="text" name="ub1"></label>
+      <label>Fachgespräch 1 (FK1): <input type="text" name="fk1"></label>
+      <label>Lehrprobe 2 (UB2): <input type="text" name="ub2"></label>
+      <label>Fachgespräch 2 (FK2): <input type="text" name="fk2"></label>
+      <label>Bachelor-Note: <input type="text" name="bachelor"></label>
+      <label>Master-Note: <input type="text" name="master"></label>
+      <label>Leistungsziffer (insgesamt): <input type="text" name="leistungsziffer"></label>
+      <button type="button" onclick="berechneSLNote()">Berechnen</button>
+    </form>
+    <div id="ergebnis"></div>
+  </div>
+
+  <script>
+    function parseWert(str) {
+      return parseFloat(str.replace(',', '.').trim()) || 0;
+    }
+
+    function berechneSLNote() {
+      const form = document.forms["notenForm"];
+      const sbr = parseWert(form["sbr"].value);
+      const paedagogik = parseWert(form["paedagogik"].value);
+      const ub1 = parseWert(form["ub1"].value);
+      const ub2 = parseWert(form["ub2"].value);
+      const fk1 = parseWert(form["fk1"].value);
+      const fk2 = parseWert(form["fk2"].value);
+      const bachelor = parseWert(form["bachelor"].value);
+      const master = parseWert(form["master"].value);
+      const leistungsziffer = parseWert(form["leistungsziffer"].value);
+
+      // Ref-Note berechnen
+      const refPunkte = leistungsziffer - (bachelor * 10) - (master * 10);
+      const refNote = refPunkte / 20;
+
+      // SL-Gutachten-Note berechnen
+      const summe = (
+        (refNote * 25) -
+        (1 * sbr + 3 * paedagogik + 5 * ub1 + 5 * ub2 + 3 * fk1 + 3 * fk2)
+      ) / 5;
+
+      const ergebnis = document.getElementById("ergebnis");
+
+      if (isNaN(summe)) {
+        ergebnis.textContent = "❌ Bitte alle Felder korrekt ausfüllen!";
+      } else {
+        ergebnis.textContent = "📘 Note Schulleitergutachten: " + summe.toFixed(2);
+      }
+    }
+  </script>
+</body>
+</html>
